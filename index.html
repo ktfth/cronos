@@ -6,27 +6,56 @@
   </head>
   <body>
     <h1 id="cronos-trigger">0:00:00</h1>
+    <input type="number" id="cronos-hour" name="hour" min=0 max=60>
+    <input type="number" id="cronos-minute" name="minute" min=0 max=60>
+    <input type="number" id="cronos-second" name="second" min=0 max=60>
     <button type="button" name="start-cronos-trigger" onclick="startCronosTrigger()">Start</button>
     <button type="button" name="stop-cronos-trigger" onclick="stopCronosTrigger()">Stop</button>
   </body>
   <script type="text/javascript">
     const cronosTrigger = document.getElementById('cronos-trigger');
+    const cronosHour = document.getElementById('cronos-hour');
+    const cronosMinute = document.getElementById('cronos-minute');
+    const cronosSecond = document.getElementById('cronos-second');
     let give = (p, f) => {
       if (p === 'minute' && f === undefined) return give() * 60;
       if (p === 'hour' && f === undefined) return give('minute') * 60;
-      if (p === undefined && f === undefined) return 1000;
+      if ((p === undefined || p === 'second') && f === undefined) return 1000;
     };
-    let timeLapse = give('minute');
+    const hour = () => parseInt(cronosHour.value || 0, 10);
+    const minute = () => parseInt(cronosMinute.value || 0, 10);
+    const second = () => parseInt(cronosSecond.value || 0, 10);
+    let timeLapse = () => {
+      let out = 0;
+      const h = () => parseInt(cronosHour.value, 10);
+      const m = () => parseInt(cronosMinute.value, 10);
+      const s = () => parseInt(cronosSecond.value, 10);
+      if (h() > 0) {
+        out += give('hour') * h();
+      }
+      if (m() > 0) {
+        out += give('minute') * m();
+      }
+      if (s() > 0) {
+        out += give('second') * s();
+      }
+      return out;
+    };
     let trigger = null;
-    let steps = [0, 1, 59];
-
-    cronosTrigger.innerHTML = '0:01:00';
+    let steps = [0, 0, 0];
+    let tl = 0;
 
     function startCronosTrigger() {
+      tl = timeLapse();
+      // cronosTrigger.innerHTML = [hour(), minute(), second()].join(':');
+      steps = [
+        0, // hour(),
+        1, // minute(),
+        59, // second()
+      ];
+      console.log(steps);
       trigger = setInterval(() => {
-        if (timeLapse >= 0) {
-          let display = timeLapse / 1000;
-
+        if (tl >= 0) {
           cronosTrigger.innerHTML =
             cronosTrigger.innerHTML
               .split(':')
@@ -34,7 +63,7 @@
                 if (i === 0) {
                   steps[i] -= 1
                   if (steps[i] > 0) {
-                    v = timeLapse / 100000;
+                    v = timeLapse() / 100000;
                   } else {
                     v = '00';
                   }
@@ -42,7 +71,7 @@
                 if (i === 1) {
                   steps[i] -= 1;
                   if (steps[i] > 0) {
-                    v = timeLapse / 10000;
+                    v = timeLapse() / 10000;
                   } else {
                     v = '00';
                   }
@@ -50,7 +79,7 @@
                 if (i === 2) {
                   steps[i] -= 1;
                   if (steps[i] > 0) {
-                    v = timeLapse / 1000;
+                    v = timeLapse() / 1000;
                   } else {
                     v = '00';
                   }
@@ -90,7 +119,7 @@
         } else {
           clearInterval(trigger);
         }
-        timeLapse -= 1000;
+        tl -= 1000;
       }, 1000);
       return trigger;
     }
