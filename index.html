@@ -11,21 +11,77 @@
   </body>
   <script type="text/javascript">
     const cronosTrigger = document.getElementById('cronos-trigger');
-    let timeLapse = 1000 * 60;
+    let give = (p, f) => {
+      if (p === 'minute' && f === undefined) return give() * 60;
+      if (p === 'hour' && f === undefined) return give('minute') * 60;
+      if (p === undefined && f === undefined) return 1000;
+    };
+    let timeLapse = give('minute');
     let trigger = null;
+    let steps = [0, 1, 59];
 
-    cronosTrigger.innerHTML = '0:00:60';
+    cronosTrigger.innerHTML = '0:01:00';
 
     function startCronosTrigger() {
       trigger = setInterval(() => {
         if (timeLapse >= 0) {
+          let display = timeLapse / 1000;
+
           cronosTrigger.innerHTML =
             cronosTrigger.innerHTML
               .split(':')
               .map((v, i) => {
+                if (i === 0) {
+                  steps[i] -= 1
+                  if (steps[i] > 0) {
+                    v = timeLapse / 100000;
+                  } else {
+                    v = '00';
+                  }
+                }
+                if (i === 1) {
+                  steps[i] -= 1;
+                  if (steps[i] > 0) {
+                    v = timeLapse / 10000;
+                  } else {
+                    v = '00';
+                  }
+                }
+                if (i === 2) {
+                  steps[i] -= 1;
+                  if (steps[i] > 0) {
+                    v = timeLapse / 1000;
+                  } else {
+                    v = '00';
+                  }
+                }
+                return v;
+              })
+              .join(':');
+
+          cronosTrigger.innerHTML =
+            cronosTrigger.innerHTML
+              .split(':')
+              .map((v, i) => {
+                if (i === 0) {
+                  let t = parseInt(v, 10);
+                  if (t > 0) {
+                    t -= 1;
+                  }
+                  v = t.toString();
+                }
+                if (i === 1) {
+                  let t = parseInt(v, 10);
+                  if (t > 0) {
+                    t -= 1;
+                  }
+                  v = t.toString();
+                }
                 if (i === 2) {
                   let t = parseInt(v, 10);
-                  t -= 1;
+                  if (t > 0) {
+                    t -= 1;
+                  }
                   v = t.toString();
                 }
                 return v;
