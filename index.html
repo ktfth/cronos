@@ -6,31 +6,42 @@
   </head>
   <body>
     <h1 id="cronos-trigger">0:00:00</h1>
+    <button type="button" name="start-cronos-trigger" onclick="startCronosTrigger()">Start</button>
+    <button type="button" name="stop-cronos-trigger" onclick="stopCronosTrigger()">Stop</button>
   </body>
   <script type="text/javascript">
     const cronosTrigger = document.getElementById('cronos-trigger');
     let timeLapse = 1000 * 60;
+    let trigger = null;
 
     cronosTrigger.innerHTML = '0:00:60';
 
-    const trigger = setInterval(() => {
-      if (timeLapse >= 0) {
-        cronosTrigger.innerHTML =
-          cronosTrigger.innerHTML
-            .split(':')
-            .map((v, i) => {
-              if (i === 2) {
-                let t = parseInt(v, 10);
-                t -= 1;
-                v = t.toString();
-              }
-              return v;
-            })
-            .join(':');
-      } else {
-        clearInterval(trigger);
-      }
-      timeLapse -= 1000;
-    }, 1000);
+    function startCronosTrigger() {
+      trigger = setInterval(() => {
+        if (timeLapse >= 0) {
+          cronosTrigger.innerHTML =
+            cronosTrigger.innerHTML
+              .split(':')
+              .map((v, i) => {
+                if (i === 2) {
+                  let t = parseInt(v, 10);
+                  t -= 1;
+                  v = t.toString();
+                }
+                return v;
+              })
+              .join(':');
+        } else {
+          clearInterval(trigger);
+        }
+        timeLapse -= 1000;
+      }, 1000);
+      return trigger;
+    }
+
+    function stopCronosTrigger() {
+      clearInterval(trigger);
+      trigger = null;
+    }
   </script>
 </html>
