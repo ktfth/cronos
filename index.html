@@ -46,53 +46,23 @@
     let tl = 0;
 
     function startCronosTrigger() {
-      let releaseTheLastPhase = false;
+      let releaseTheLastPhaseOfHour = false;
+      let releaseTheLastPhaseOfMinute = false;
       tl = timeLapse();
       cronosTrigger.innerHTML = [hour(), minute(), second()].join(':');
-      // steps = [
-      //   hour(),
-      //   minute(),
-      //   second(),
-      // ];
       trigger = setInterval(() => {
         if (tl >= 0) {
           let display = cronosTrigger.innerHTML.split(':');
-          // cronosTrigger.innerHTML =
-          //   cronosTrigger.innerHTML
-          //     .split(':')
-          //     .map((v, i) => {
-          //       if (i === 0) {
-          //         steps[i] -= 1
-          //         if (steps[i] > 0) {
-          //           v = tl / 100000;
-          //         } else {
-          //           v = '00';
-          //         }
-          //       }
-          //       if (i === 1) {
-          //         steps[i] -= 1;
-          //         if (steps[i] > 0) {
-          //           v = tl / 10000;
-          //         } else {
-          //           v = '00';
-          //         }
-          //       }
-          //       if (i === 2) {
-          //         steps[i] -= 1;
-          //         if (steps[i] > 0) {
-          //           v = tl / 1000;
-          //         } else {
-          //           v = '00';
-          //         }
-          //       }
-          //       return v;
-          //     })
-          //     .join(':');
 
-          if (releaseTheLastPhase) {
+          if (releaseTheLastPhaseOfHour) {
+            display[1] = '59';
+            cronosTrigger.innerHTML = display.join(';');
+            releaseTheLastPhaseOfHour = false;
+          }
+          if (releaseTheLastPhaseOfMinute) {
             display[2] = '59';
             cronosTrigger.innerHTML = display.join(':');
-            releaseTheLastPhase = false;
+            releaseTheLastPhaseOfMinute = false;
           }
 
           cronosTrigger.innerHTML =
@@ -101,8 +71,11 @@
               .map((v, i) => {
                 if (i === 0) {
                   let t = parseInt(v, 10);
-                  if (t > 0) {
+                  if (t > 0 && display[1] === '00') {
                     t -= 1;
+                    if (!releaseTheLastPhaseOfHour && t === 0) {
+                      releaseTheLastPhaseOfHour = true;
+                    }
                   }
                   v = t.toString();
                 }
@@ -110,8 +83,8 @@
                   let t = parseInt(v, 10);
                   if (t > 0 && display[2] === '00') {
                     t -= 1;
-                    if (!releaseTheLastPhase && t === 0) {
-                      releaseTheLastPhase = true;
+                    if (!releaseTheLastPhaseOfMinute && t === 0) {
+                      releaseTheLastPhaseOfMinute = true;
                     }
                   }
                   if (t === 0) {
