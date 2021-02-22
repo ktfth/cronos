@@ -48,22 +48,17 @@
     function startCronosTrigger() {
       let releaseTheLastPhaseOfHour = false;
       let releaseTheLastPhaseOfMinute = false;
+      let isMinuteUpdate = false;
+      let releaseTheLastPhaseOfSecond = false;
       tl = timeLapse();
-      cronosTrigger.innerHTML = [hour(), minute(), second()].join(':');
+      cronosTrigger.innerHTML = [
+        hour() < 10 && hour() > 0 ? '0' + hour() : hour(),
+        minute() < 10 && minute() > 0 ? '0' + minute() : minute(),
+        second() < 10 && second() > 0 ? '0' + second() : second()
+      ].join(':');
       trigger = setInterval(() => {
         if (tl >= 0) {
           let display = cronosTrigger.innerHTML.split(':');
-
-          if (releaseTheLastPhaseOfHour) {
-            display[1] = '59';
-            cronosTrigger.innerHTML = display.join(';');
-            releaseTheLastPhaseOfHour = false;
-          }
-          if (releaseTheLastPhaseOfMinute) {
-            display[2] = '59';
-            cronosTrigger.innerHTML = display.join(':');
-            releaseTheLastPhaseOfMinute = false;
-          }
 
           cronosTrigger.innerHTML =
             cronosTrigger.innerHTML
@@ -72,17 +67,24 @@
                 if (i === 0) {
                   let t = parseInt(v, 10);
                   if (t > 0 && display[1] === '00') {
-                    t -= 1;
+                    if (releaseTheLastPhaseOfMinute) {
+                      t -= 1;
+                      releaseTheLastPhaseOfMinute = false;
+                    }
                     if (!releaseTheLastPhaseOfHour && t === 0) {
                       releaseTheLastPhaseOfHour = true;
                     }
                   }
-                  v = t.toString();
+                  v = t < 10 && t > 0 ? '0' + t : t;
                 }
                 if (i === 1) {
                   let t = parseInt(v, 10);
                   if (t > 0 && display[2] === '00') {
-                    t -= 1;
+                    if (releaseTheLastPhaseOfSecond) {
+                      t -= 1;
+                      releaseTheLastPhaseOfSecond = false;
+                      isMinuteUpdate = true;
+                    }
                     if (!releaseTheLastPhaseOfMinute && t === 0) {
                       releaseTheLastPhaseOfMinute = true;
                     }
@@ -90,21 +92,48 @@
                   if (t === 0) {
                     t = '00';
                   }
-                  v = t.toString();
+                  v = t < 10 && t > 0 ? '0' + t : t;
                 }
                 if (i === 2) {
                   let t = parseInt(v, 10);
                   if (t > 0) {
                     t -= 1;
+                    if (!releaseTheLastPhaseOfSecond && t === 0) {
+                      releaseTheLastPhaseOfSecond = true;
+                    }
                   }
                   if (t === 0) {
                     t = '00';
                   }
-                  v = t.toString();
+                  v = t < 10 && t > 0 ? '0' + t : t;
                 }
                 return v;
               })
               .join(':');
+
+          if (releaseTheLastPhaseOfHour) {
+            display = cronosTrigger.innerHTML.split(':');
+            display[1] = '59';
+            cronosTrigger.innerHTML = display.join(';');
+            releaseTheLastPhaseOfHour = false;
+          }
+
+          if (releaseTheLastPhaseOfMinute) {
+            display = cronosTrigger.innerHTML.split(':');
+            display[2] = '59';
+            cronosTrigger.innerHTML = display.join(':');
+            releaseTheLastPhaseOfMinute = false;
+          }
+
+          if (isMinuteUpdate) {
+            display = cronosTrigger.innerHTML.split(':');
+            let minutes = parseInt(display[1], 10);
+            if (minutes > 0) {
+              display[2] = '59';
+              cronosTrigger.innerHTML = display.join(':');
+              isMinuteUpdate = false;
+            }
+          }
         } else {
           clearInterval(trigger);
         }
