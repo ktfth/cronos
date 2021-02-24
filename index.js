@@ -1,11 +1,13 @@
 'use strict';
 
+function give(p, f) {
+  if (p === 'minute' && f === undefined) return give() * 60;
+  if (p === 'hour' && f === undefined) return give('minute') * 60;
+  if ((p === undefined || p === 'second') && f === undefined) return 1000;
+}
+exports.give = give;
+
 function start(display) {
-  let give = (p, f) => {
-    if (p === 'minute' && f === undefined) return give() * 60;
-    if (p === 'hour' && f === undefined) return give('minute') * 60;
-    if ((p === undefined || p === 'second') && f === undefined) return 1000;
-  };
   let timeLapse = () => {
     let d = display.split(':')
     let out = 0;
