@@ -37,11 +37,11 @@ function treatTime(display) {
 }
 exports.treatTime = treatTime;
 
-function start(display) {
+function start(display, callback) {
   let trigger = null;
   let tl = 0;
 
-  function startCronosTrigger() {
+  function startCronosTrigger(cb) {
     let releaseTheLastPhaseOfHour = false;
     let isHourUpdate = false;
     let releaseTheLastPhaseOfMinute = false;
@@ -55,6 +55,37 @@ function start(display) {
           display
             .split(':')
             .map((v, i) => {
+              if (i === 2) {
+                let t = parseInt(v, 10);
+                if (t > 0) {
+                  t -= 1;
+                  if (!releaseTheLastPhaseOfSecond && t === 0) {
+                    releaseTheLastPhaseOfSecond = true;
+                  }
+                }
+                if (t === 0) {
+                  releaseTheLastPhaseOfSecond = true;
+                  t = '00';
+                }
+                v = t < 10 && t > 0 ? '0' + t : t;
+              }
+              if (i === 1) {
+                let t = parseInt(v, 10);
+                if (t > 0 && display[2] === '00') {
+                  if (releaseTheLastPhaseOfSecond) {
+                    t -= 1;
+                    releaseTheLastPhaseOfSecond = false;
+                    isMinuteUpdate = true;
+                  }
+                  if (!releaseTheLastPhaseOfMinute && t === 0) {
+                    releaseTheLastPhaseOfMinute = true;
+                  }
+                }
+                if (t === 0) {
+                  t = '00';
+                }
+                v = t < 10 && t > 0 ? '0' + t : t;
+              }
               if (i === 0) {
                 let t = parseInt(v, 10);
                 if (t > 0 && display[1] === '00') {
@@ -76,37 +107,6 @@ function start(display) {
                   t = '0';
                 }
                 v = t;
-              }
-              if (i === 1) {
-                let t = parseInt(v, 10);
-                if (t > 0 && display[2] === '00') {
-                  if (releaseTheLastPhaseOfSecond) {
-                    t -= 1;
-                    releaseTheLastPhaseOfSecond = false;
-                    isMinuteUpdate = true;
-                  }
-                  if (!releaseTheLastPhaseOfMinute && t === 0) {
-                    releaseTheLastPhaseOfMinute = true;
-                  }
-                }
-                if (t === 0) {
-                  t = '00';
-                }
-                v = t < 10 && t > 0 ? '0' + t : t;
-              }
-              if (i === 2) {
-                let t = parseInt(v, 10);
-                if (t > 0) {
-                  t -= 1;
-                  if (!releaseTheLastPhaseOfSecond && t === 0) {
-                    releaseTheLastPhaseOfSecond = true;
-                  }
-                }
-                if (t === 0) {
-                  releaseTheLastPhaseOfSecond = true;
-                  t = '00';
-                }
-                v = t < 10 && t > 0 ? '0' + t : t;
               }
               return v;
             })
@@ -146,15 +146,16 @@ function start(display) {
             isMinuteUpdate = false;
           }
         }
+      } if (global !== undefined) {
+        global.display = display;
       } else {
         clearInterval(trigger);
       }
       tl -= 1000;
     }, 1000);
-    return trigger;
+
+    cb && cb();
   }
-
-  return startCronosTrigger();
+  startCronosTrigger(callback);
 }
-
 exports.start = start;
