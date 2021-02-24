@@ -26,3 +26,7 @@ test('give a specific time for hour', () => {
 test('time lapse related to the display', () => {
   expect(cronos.timeLapse('0:01:05')).toBe((1000 * 60) + 5000);
 });
+
+test('treat time inputs', () => {
+  expect(cronos.treatTime('0:1:05')).toBe('0:01:05');
+});
