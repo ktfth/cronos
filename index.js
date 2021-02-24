@@ -7,24 +7,26 @@ function give(p, f) {
 }
 exports.give = give;
 
+function timeLapse(display) {
+  let d = display.split(':')
+  let out = 0;
+  const h = () => parseInt(d[0], 10);
+  const m = () => parseInt(d[1], 10);
+  const s = () => parseInt(d[2], 10);
+  if (h() > 0) {
+    out += give('hour') * h();
+  }
+  if (m() > 0) {
+    out += give('minute') * m();
+  }
+  if (s() > 0) {
+    out += give('second') * s();
+  }
+  return out;
+};
+exports.timeLapse = timeLapse;
+
 function start(display) {
-  let timeLapse = () => {
-    let d = display.split(':')
-    let out = 0;
-    const h = () => parseInt(d[0], 10);
-    const m = () => parseInt(d[1], 10);
-    const s = () => parseInt(d[2], 10);
-    if (h() > 0) {
-      out += give('hour') * h();
-    }
-    if (m() > 0) {
-      out += give('minute') * m();
-    }
-    if (s() > 0) {
-      out += give('second') * s();
-    }
-    return out;
-  };
   let trigger = null;
   let steps = [0, 0, 0];
   let tl = 0;
