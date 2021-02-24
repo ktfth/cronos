@@ -26,9 +26,19 @@ function timeLapse(display) {
 };
 exports.timeLapse = timeLapse;
 
+function treatTime(display) {
+  display = display.split(':').map(v => parseInt(v, 10));
+  display = [
+    display[0] < 10 && display[0] > 0 ? '0' + display[0] : display[0],
+    display[1] < 10 && display[1] > 0 ? '0' + display[1] : display[1],
+    display[2] < 10 && display[2] > 0 ? '0' + display[2] : display[2],
+  ].join(':');
+  return display;
+}
+exports.treatTime = treatTime;
+
 function start(display) {
   let trigger = null;
-  let steps = [0, 0, 0];
   let tl = 0;
 
   function startCronosTrigger() {
@@ -37,13 +47,8 @@ function start(display) {
     let releaseTheLastPhaseOfMinute = false;
     let isMinuteUpdate = false;
     let releaseTheLastPhaseOfSecond = false;
-    let tl = timeLapse();
-    display = display.split(':');
-    display = [
-      display[0] < 10 && display[0] > 0 ? '0' + display[0] : display[0],
-      display[1] < 10 && display[1] > 0 ? '0' + display[1] : display[1],
-      display[2] < 10 && display[2] > 0 ? '0' + display[2] : display[2],
-    ].join(':');
+    let tl = timeLapse(display);
+    display = treatTime(display);
     trigger = setInterval(() => {
       if (tl >= 0) {
         display =
