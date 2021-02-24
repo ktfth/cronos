@@ -1,15 +1,7 @@
 'use strict';
 const cronos = require('./');
 
-// jest.useFakeTimers();
-
-// test('waits interval finish', () => {
-//   const cronos = require('./');
-//
-//   cronos.start('0:00:5');
-//
-//   expect(setInterval).toHaveBeenCalledTimes(5);
-// });
+jest.useFakeTimers();
 
 test('give a specific time for second', () => {
   expect(cronos.give('second')).toBe(1000);
@@ -29,4 +21,10 @@ test('time lapse related to the display', () => {
 
 test('treat time inputs', () => {
   expect(cronos.treatTime('0:1:05')).toBe('0:01:05');
+});
+
+test('waits interval finish', () => {
+  cronos.start('0:00:5');
+
+  expect(setInterval).toHaveBeenCalledTimes(1);
 });
