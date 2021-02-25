@@ -24,7 +24,7 @@ test('treat time inputs', () => {
 });
 
 test('waits interval finish', () => {
-  cronos.start('0:00:5');
+  let trigger = new cronos.Trigger('0:00:5');
 
   expect(setInterval).toHaveBeenCalledTimes(1);
 });
