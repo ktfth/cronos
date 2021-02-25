@@ -60,7 +60,7 @@ function Trigger(display, callback, opts={'enableTheLastPhaseRecord': false}) {
     self.trigger = setInterval(() => {
       if (tl > 0) {
         self.setDisplay(
-          display
+          self.getDisplay()
             .split(':')
             .map((v, i) => {
               if (i === 2) {
@@ -88,10 +88,11 @@ function Trigger(display, callback, opts={'enableTheLastPhaseRecord': false}) {
         self.updateSecond();
 
         self.checkSecondUpdate();
-      } if (self.trigger !== null && tl === 0) {
-        clearInterval(self.trigger);
       }
       tl -= 1000;
+      if (self.trigger !== null && tl === 0) {
+        clearInterval(self.trigger);
+      }
       cb && cb();
     }, 1000);
   }
@@ -183,12 +184,6 @@ function triggerCheckSecondUpdate() {
     let d = self.getDisplay().split(':');
     let seconds = parseInt(d[2], 10);
     if (seconds > 0) {
-      let second = seconds - 1;
-      d[2] = second < 10 || second > 0 ? '0' + second : second;
-      self.setDisplay(d.join(':'));
-      self.isSecondUpdate = false;
-    } else if (seconds === 0) {
-      d[2] = '00';
       self.setDisplay(d.join(':'));
       self.isSecondUpdate = false;
     }
@@ -221,7 +216,7 @@ Trigger.prototype.displaySecond = triggerDisplaySecond;
 function triggerDisplayMinute(v, i) {
   let self = this;
   let t = parseInt(v, 10);
-  if (t > 0 && display[2] === '00') {
+  if (t > 0 && self.getDisplay().split(':')[2] === '00') {
     if (self.releaseTheLastPhaseOfSecond) {
       t -= 1;
       self.releaseTheLastPhaseOfSecond = false;
@@ -242,7 +237,7 @@ Trigger.prototype.displayMinute = triggerDisplayMinute;
 function triggerDisplayHour(v, i) {
   let self = this;
   let t = parseInt(v, 10);
-  if (t > 0 && display[1] === '00') {
+  if (t > 0 && self.getDisplay().split(':')[1] === '00') {
     if (!self.releaseTheLastPhaseOfHour) {
       t -= 1;
       self.releaseTheLastPhaseOfHour = true;
