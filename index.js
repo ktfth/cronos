@@ -91,7 +91,7 @@ function Trigger(display, callback, opts={'enableTheLastPhaseRecord': false}) {
       }
       tl -= 1000;
       if (self.trigger !== null && tl === 0) {
-        clearInterval(self.trigger);
+        self.stop();
       }
       cb && cb();
     }, 1000);
@@ -99,6 +99,12 @@ function Trigger(display, callback, opts={'enableTheLastPhaseRecord': false}) {
 
   startCronosTrigger(callback);
 }
+
+function triggerStop() {
+  clearInterval(this.trigger);
+  return this;
+}
+Trigger.prototype.stop = triggerStop;
 
 function triggerGetDisplay() {
   return this.display;
