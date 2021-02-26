@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Cronos</title>
+  </head>
+  <body>
+    <h1 id="cronos-trigger">0:00:00</h1>
+    <input type="number" id="cronos-hour" name="hour" min=0 max=60>
+    <input type="number" id="cronos-minute" name="minute" min=0 max=60>
+    <input type="number" id="cronos-second" name="second" min=0 max=60>
+    <button type="button" name="start-cronos-trigger" onclick="startCronosTrigger()">Start</button>
+    <button type="button" name="stop-cronos-trigger" onclick="stopCronosTrigger()">Stop</button>
+  </body>
+  <script src="../dist/cronos.js"></script>
+  <script type="text/javascript">
+    const cronosTrigger = document.getElementById('cronos-trigger');
+    const cronosHour = document.getElementById('cronos-hour');
+    const cronosMinute = document.getElementById('cronos-minute');
+    const cronosSecond = document.getElementById('cronos-second');
+    let trigger = null;
+
+    function startCronosTrigger() {
+      let hour = cronosHour.value ? cronosHour.value : '0';
+      let minute = cronosMinute.value ? cronosMinute.value : '00';
+      let second = cronosSecond.value ? cronosSecond.value : '00';
+      trigger = new cronos.Trigger([
+        hour,
+        minute,
+        second,
+      ].join(':'), () => {
+        cronosTrigger.innerHTML = trigger.getDisplay();
+      });
+    }
+    function stopCronosTrigger() {
+      trigger.stop();
+    }
+  </script>
+</html>

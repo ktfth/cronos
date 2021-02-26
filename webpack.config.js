@@ -11,7 +11,7 @@ https://ktfth.github.io/cronos
 Licensed ISC`;
 
 module.exports = {
-  entry: './index.js',
+  entry: './src/cronos.js',
   mode: 'production',
   output: {
     filename: production ? 'cronos.min.js' : 'cronos.js',
