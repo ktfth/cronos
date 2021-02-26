@@ -77,17 +77,17 @@ function Trigger(display, callback, opts={'enableTheLastPhaseRecord': true}) {
             .join(':')
         );
 
-        self.updateHour();
+        self.updateSecond();
 
-        self.checkHourUpdate();
+        self.checkSecondUpdate();
 
         self.updateMinute();
 
         self.checkMinuteUpdate();
 
-        self.updateSecond();
+        self.updateHour();
 
-        self.checkSecondUpdate();
+        self.checkHourUpdate();
       }
       tl -= 1000;
       if (self.trigger !== null && tl === 0) {
@@ -234,8 +234,8 @@ function triggerDisplayMinute(v) {
   let self = this;
   let t = parseInt(v, 10);
   if (t > 0 && self.getDisplay().split(':')[2] === '00') {
+    t -= 1;
     if (self.getReleaseTheLastPhaseOfSecond()) {
-      t -= 1;
       self.setReleaseTheLastPhaseOfSecond(false);
       self.isMinuteUpdate = true;
     }
