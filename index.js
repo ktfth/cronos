@@ -64,13 +64,13 @@ function Trigger(display, callback, opts={'enableTheLastPhaseRecord': false}) {
             .split(':')
             .map((v, i) => {
               if (i === 2) {
-                v = self.displaySecond(v, i);
+                v = self.displaySecond(v);
               }
               if (i === 1) {
-                v = self.displayMinute(v, i);
+                v = self.displayMinute(v);
               }
               if (i === 0) {
-                v = self.displayHour(v, i);
+                v = self.displayHour(v);
               }
               return v;
             })
@@ -198,7 +198,7 @@ function triggerCheckSecondUpdate() {
 }
 Trigger.prototype.checkSecondUpdate = triggerCheckSecondUpdate;
 
-function triggerDisplaySecond(v, i) {
+function triggerDisplaySecond(v) {
   let self = this;
   let t = parseInt(v, 10);
   if (t > 0) {
@@ -219,7 +219,7 @@ function triggerDisplaySecond(v, i) {
 }
 Trigger.prototype.displaySecond = triggerDisplaySecond;
 
-function triggerDisplayMinute(v, i) {
+function triggerDisplayMinute(v) {
   let self = this;
   let t = parseInt(v, 10);
   if (t > 0 && self.getDisplay().split(':')[2] === '00') {
@@ -240,7 +240,7 @@ function triggerDisplayMinute(v, i) {
 }
 Trigger.prototype.displayMinute = triggerDisplayMinute;
 
-function triggerDisplayHour(v, i) {
+function triggerDisplayHour(v) {
   let self = this;
   let t = parseInt(v, 10);
   if (t > 0 && self.getDisplay().split(':')[1] === '00') {
