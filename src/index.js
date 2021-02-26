@@ -64,30 +64,30 @@ function Trigger(display, callback, opts={'enableTheLastPhaseRecord': true}) {
             .split(':')
             .map((v, i) => {
               if (i === 2) {
-                v = self.displaySecond.call(self, v);
+                v = self.displaySecond(v);
               }
               if (i === 1) {
-                v = self.displayMinute.call(self, v);
+                v = self.displayMinute(v);
               }
               if (i === 0) {
-                v = self.displayHour.call(self, v);
+                v = self.displayHour(v);
               }
               return v;
             })
             .join(':')
         );
 
-        self.updateHour.call(self);
+        self.updateHour();
 
-        self.checkHourUpdate.call(self);
+        self.checkHourUpdate();
 
-        self.updateMinute.call(self);
+        self.updateMinute();
 
-        self.checkMinuteUpdate.call(self);
+        self.checkMinuteUpdate();
 
-        self.updateSecond.call(self);
+        self.updateSecond();
 
-        self.checkSecondUpdate.call(self);
+        self.checkSecondUpdate();
       }
       tl -= 1000;
       if (self.trigger !== null && tl === 0) {
