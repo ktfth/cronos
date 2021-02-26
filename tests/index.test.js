@@ -1,5 +1,5 @@
 'use strict';
-const cronos = require('./');
+const cronos = require('../src');
 
 jest.useFakeTimers();
 
