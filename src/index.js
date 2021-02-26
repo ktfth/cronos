@@ -37,7 +37,7 @@ function treatTime(display) {
 }
 exports.treatTime = treatTime;
 
-function Trigger(display, callback, opts={'enableTheLastPhaseRecord': false}) {
+function Trigger(display, callback, opts={'enableTheLastPhaseRecord': true}) {
   let self = this;
   let tl = 0;
 
@@ -64,30 +64,30 @@ function Trigger(display, callback, opts={'enableTheLastPhaseRecord': false}) {
             .split(':')
             .map((v, i) => {
               if (i === 2) {
-                v = self.displaySecond(v);
+                v = self.displaySecond.call(self, v);
               }
               if (i === 1) {
-                v = self.displayMinute(v);
+                v = self.displayMinute.call(self, v);
               }
               if (i === 0) {
-                v = self.displayHour(v);
+                v = self.displayHour.call(self, v);
               }
               return v;
             })
             .join(':')
         );
 
-        self.updateHour();
+        self.updateHour.call(self);
 
-        self.checkHourUpdate();
+        self.checkHourUpdate.call(self);
 
-        self.updateMinute();
+        self.updateMinute.call(self);
 
-        self.checkMinuteUpdate();
+        self.checkMinuteUpdate.call(self);
 
-        self.updateSecond();
+        self.updateSecond.call(self);
 
-        self.checkSecondUpdate();
+        self.checkSecondUpdate.call(self);
       }
       tl -= 1000;
       if (self.trigger !== null && tl === 0) {
@@ -198,19 +198,30 @@ function triggerCheckSecondUpdate() {
 }
 Trigger.prototype.checkSecondUpdate = triggerCheckSecondUpdate;
 
+function triggerSetReleaseTheLastPhaseOfSecond(v) {
+  this.releaseTheLastPhaseOfSecond = v;
+  return this;
+}
+Trigger.prototype.setReleaseTheLastPhaseOfSecond = triggerSetReleaseTheLastPhaseOfSecond;
+
+function triggerGetReleaseTheLastPhaseOfSecond() {
+  return this.releaseTheLastPhaseOfSecond;
+}
+Trigger.prototype.getReleaseTheLastPhaseOfSecond = triggerGetReleaseTheLastPhaseOfSecond;
+
 function triggerDisplaySecond(v) {
   let self = this;
   let t = parseInt(v, 10);
   if (t > 0) {
     t -= 1;
-    if (!self.releaseTheLastPhaseOfSecond && t === 0) {
-      self.releaseTheLastPhaseOfSecond = true;
+    if (!self.getReleaseTheLastPhaseOfSecond() && t === 0) {
+      self.setReleaseTheLastPhaseOfSecond(true);
     }
     self.isSecondUpdate = true;
   }
   if (t === 0) {
     if (self.enableTheLastPhaseRecord) {
-      self.releaseTheLastPhaseOfSecond = true;
+      self.setReleaseTheLastPhaseOfSecond(true);
     }
     t = '00';
   }
@@ -223,9 +234,9 @@ function triggerDisplayMinute(v) {
   let self = this;
   let t = parseInt(v, 10);
   if (t > 0 && self.getDisplay().split(':')[2] === '00') {
-    if (self.releaseTheLastPhaseOfSecond) {
+    if (self.getReleaseTheLastPhaseOfSecond()) {
       t -= 1;
-      self.releaseTheLastPhaseOfSecond = false;
+      self.setReleaseTheLastPhaseOfSecond(false);
       self.isMinuteUpdate = true;
     }
     if (!self.releaseTheLastPhaseOfMinute && t === 0) {
