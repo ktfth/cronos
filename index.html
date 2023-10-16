@@ -12,160 +12,28 @@
     <button type="button" name="start-cronos-trigger" onclick="startCronosTrigger()">Start</button>
     <button type="button" name="stop-cronos-trigger" onclick="stopCronosTrigger()">Stop</button>
   </body>
+  <script src="./dist/cronos.js"></script>
   <script type="text/javascript">
     const cronosTrigger = document.getElementById('cronos-trigger');
     const cronosHour = document.getElementById('cronos-hour');
     const cronosMinute = document.getElementById('cronos-minute');
     const cronosSecond = document.getElementById('cronos-second');
-    let give = (p, f) => {
-      if (p === 'minute' && f === undefined) return give() * 60;
-      if (p === 'hour' && f === undefined) return give('minute') * 60;
-      if ((p === undefined || p === 'second') && f === undefined) return 1000;
-    };
-    const hour = () => parseInt(cronosHour.value || '00', 10);
-    const minute = () => parseInt(cronosMinute.value || '00', 10);
-    const second = () => parseInt(cronosSecond.value || '00', 10);
-    let timeLapse = () => {
-      let out = 0;
-      const h = () => parseInt(cronosHour.value, 10);
-      const m = () => parseInt(cronosMinute.value, 10);
-      const s = () => parseInt(cronosSecond.value, 10);
-      if (h() > 0) {
-        out += give('hour') * h();
-      }
-      if (m() > 0) {
-        out += give('minute') * m();
-      }
-      if (s() > 0) {
-        out += give('second') * s();
-      }
-      return out;
-    };
     let trigger = null;
-    let steps = [0, 0, 0];
-    let tl = 0;
 
     function startCronosTrigger() {
-      let releaseTheLastPhaseOfHour = false;
-      let isHourUpdate = false;
-      let releaseTheLastPhaseOfMinute = false;
-      let isMinuteUpdate = false;
-      let releaseTheLastPhaseOfSecond = false;
-      tl = timeLapse();
-      cronosTrigger.innerHTML = [
-        hour() < 10 && hour() > 0 ? '0' + hour() : hour(),
-        minute() < 10 && minute() > 0 ? '0' + minute() : minute(),
-        second() < 10 && second() > 0 ? '0' + second() : second(),
-      ].join(':');
-      trigger = setInterval(() => {
-        if (tl >= 0) {
-          let display = cronosTrigger.innerHTML.split(':');
-
-          cronosTrigger.innerHTML =
-            cronosTrigger.innerHTML
-              .split(':')
-              .map((v, i) => {
-                if (i === 0) {
-                  let t = parseInt(v, 10);
-                  if (t > 0 && display[1] === '00') {
-                    if (!releaseTheLastPhaseOfHour) {
-                      t -= 1;
-                      releaseTheLastPhaseOfHour = true;
-                      isHourUpdate = true;
-                    }
-                    if (releaseTheLastPhaseOfMinute) {
-                      t -= 1;
-                      releaseTheLastPhaseOfMinute = false;
-                      isHourUpdate = true;
-                    }
-                    if (!releaseTheLastPhaseOfHour && t === 0) {
-                      releaseTheLastPhaseOfHour = true;
-                    }
-                  }
-                  if (t === 0) {
-                    t = '0';
-                  }
-                  v = t;
-                }
-                if (i === 1) {
-                  let t = parseInt(v, 10);
-                  if (t > 0 && display[2] === '00') {
-                    if (releaseTheLastPhaseOfSecond) {
-                      t -= 1;
-                      releaseTheLastPhaseOfSecond = false;
-                      isMinuteUpdate = true;
-                    }
-                    if (!releaseTheLastPhaseOfMinute && t === 0) {
-                      releaseTheLastPhaseOfMinute = true;
-                    }
-                  }
-                  if (t === 0) {
-                    t = '00';
-                  }
-                  v = t < 10 && t > 0 ? '0' + t : t;
-                }
-                if (i === 2) {
-                  let t = parseInt(v, 10);
-                  if (t > 0) {
-                    t -= 1;
-                    if (!releaseTheLastPhaseOfSecond && t === 0) {
-                      releaseTheLastPhaseOfSecond = true;
-                    }
-                  }
-                  if (t === 0) {
-                    t = '00';
-                  }
-                  v = t < 10 && t > 0 ? '0' + t : t;
-                }
-                return v;
-              })
-              .join(':');
-
-          if (releaseTheLastPhaseOfHour) {
-            display = cronosTrigger.innerHTML.split(':');
-            display[1] = '59';
-            display[2] = '59';
-            cronosTrigger.innerHTML = display.join(':');
-            releaseTheLastPhaseOfHour = false;
-          }
-
-          if (isHourUpdate) {
-            display = cronosTrigger.innerHTML.split(':');
-            let hours = parseInt(display[0], 10);
-            if (hours > 0) {
-              display[1] = '59';
-              cronosTrigger.innerHTML = display.join(':');
-              isHourUpdate = false;
-            }
-          }
-
-          if (releaseTheLastPhaseOfMinute) {
-            display = cronosTrigger.innerHTML.split(':');
-            display[2] = '59';
-            cronosTrigger.innerHTML = display.join(':');
-            releaseTheLastPhaseOfMinute = false;
-          }
-
-          if (isMinuteUpdate) {
-            display = cronosTrigger.innerHTML.split(':');
-            let minutes = parseInt(display[1], 10);
-            if (minutes > 0) {
-              display[2] = '59';
-              cronosTrigger.innerHTML = display.join(':');
-              isMinuteUpdate = false;
-            }
-          }
-        } else {
-          clearInterval(trigger);
-        }
-        tl -= 1000;
-      }, 1000);
-      return trigger;
+      let hour = cronosHour.value ? cronosHour.value : '0';
+      let minute = cronosMinute.value ? cronosMinute.value : '00';
+      let second = cronosSecond.value ? cronosSecond.value : '00';
+      trigger = new cronos.Trigger([
+        hour,
+        minute,
+        second,
+      ].join(':'), () => {
+        cronosTrigger.innerHTML = trigger.getDisplay();
+      });
     }
-
     function stopCronosTrigger() {
-      clearInterval(trigger);
-      trigger = null;
+      trigger.stop();
     }
   </script>
 </html>
